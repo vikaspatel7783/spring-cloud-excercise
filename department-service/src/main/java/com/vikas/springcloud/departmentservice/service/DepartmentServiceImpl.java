@@ -31,4 +31,9 @@ public class DepartmentServiceImpl implements DepartmentService{
     public void delete(Long departmentId) {
         departmentRepository.deleteById(departmentId);
     }
+
+    @Override
+    public DepartmentDto getDepartmentByCode(String departmentCode) {
+        return toDepartmentDto(departmentRepository.findByDepartmentCode(departmentCode));
+    }
 }

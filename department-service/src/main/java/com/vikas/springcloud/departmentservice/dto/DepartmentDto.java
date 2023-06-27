@@ -3,6 +3,7 @@ package com.vikas.springcloud.departmentservice.dto;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,14 +14,12 @@ public class DepartmentDto {
     private Long id;
 
     @NotEmpty(message = "department name is mandatory")
-    @Max(value = 20, message = "department name should not exceed than 20 characters")
-    @Min(value = 5, message = "department name should at-least have 5 characters")
+    @Size(min = 3, max = 20, message = "department name should have minimum 3 and maximum 20 length")
     private String departmentName;
 
     private String departmentDescription;
 
     @NotEmpty(message = "department code is mandatory")
-    @Max(value = 15, message = "department code should not exceed more than 15 characters")
-    @Min(value = 5, message = "department code should at-least have 5 characters")
+    @Size(min = 3, max = 20, message = "department code should have minimum 3 and maximum 20 length")
     private String departmentCode;
 }

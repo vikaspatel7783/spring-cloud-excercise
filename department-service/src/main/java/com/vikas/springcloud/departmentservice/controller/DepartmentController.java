@@ -24,4 +24,9 @@ public class DepartmentController {
     public void deleteDepartment(@PathVariable("department-id") Long departmentId) {
         departmentService.delete(departmentId);
     }
+
+    @GetMapping("{department-code}")
+    public ResponseEntity<DepartmentDto> findByDepartmentCode(@PathVariable("department-code") String departmentCode) {
+        return new ResponseEntity<>(departmentService.getDepartmentByCode(departmentCode), HttpStatus.OK);
+    }
 }

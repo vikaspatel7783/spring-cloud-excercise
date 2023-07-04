@@ -1,5 +1,6 @@
 package com.vikas.springcloud.employeeservice.controller;
 
+import com.vikas.springcloud.employeeservice.dto.ApiResponse;
 import com.vikas.springcloud.employeeservice.dto.EmployeeDto;
 import com.vikas.springcloud.employeeservice.service.EmployeeService;
 import lombok.AllArgsConstructor;
@@ -20,7 +21,7 @@ public class EmployeeController {
     }
 
     @GetMapping("{employee-id}")
-    public ResponseEntity<EmployeeDto> findEmployee(@PathVariable("employee-id") Long id) {
+    public ResponseEntity<ApiResponse> findEmployee(@PathVariable("employee-id") Long id) {
         return new ResponseEntity<>(employeeService.findEmployeeById(id), HttpStatus.OK);
     }
 }

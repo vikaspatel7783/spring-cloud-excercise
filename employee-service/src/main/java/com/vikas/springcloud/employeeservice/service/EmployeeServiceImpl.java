@@ -4,16 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vikas.springcloud.employeeservice.dto.ApiResponse;
 import com.vikas.springcloud.employeeservice.dto.DepartmentDto;
 import com.vikas.springcloud.employeeservice.dto.EmployeeDto;
+import com.vikas.springcloud.employeeservice.dto.OrganizationDto;
 import com.vikas.springcloud.employeeservice.entity.Employee;
 import com.vikas.springcloud.employeeservice.repository.EmployeeRepository;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 @AllArgsConstructor
@@ -25,7 +24,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     private ObjectMapper objectMapper;
 //    private RestTemplate restTemplate;
 //    private WebClient webClient;
-    private FeignApiClient feignApiClient;
+    private DepartmentServiceFeignApiClient departmentServiceFeignApiClient;
+    private OrganizationServiceFeignApiClient organizationServiceFeignApiClient;
 
     private Employee toEmployeeEntity(EmployeeDto employeeDto) {
         return objectMapper.convertValue(employeeDto, Employee.class);
@@ -60,9 +60,15 @@ public class EmployeeServiceImpl implements EmployeeService {
 //                .block();// Synchronous communication
 
         // call using Spring Cloud Feign client
-        DepartmentDto departmentDto = feignApiClient.findByDepartmentCode(employeeById.getDepartmentCode());
+        DepartmentDto departmentDto = departmentServiceFeignApiClient.findByDepartmentCode(employeeById.getDepartmentCode());
 
-        return new ApiResponse(toEmployeeDto(employeeById), departmentDto);
+        // call using Spring cloud Feign client
+        OrganizationDto organizationDto = organizationServiceFeignApiClient.findByOrganizationCode(employeeById.getOrganizationCode());
+//        OrganizationDto organizationDto = restTemplate.getForEntity(
+//                "http://localhost:8083/api/organizations/"+employeeById.getOrganizationCode(),
+//                OrganizationDto.class).getBody();
+
+        return new ApiResponse(toEmployeeDto(employeeById), departmentDto, organizationDto);
     }
 
     public ApiResponse getDefaultDepartment(Long id, Exception e) {
@@ -75,6 +81,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         departmentDto.setDepartmentName("DEFAULT DEPARTMENT");
         departmentDto.setDepartmentDescription("returning default department as department service is not responding");
 
-        return new ApiResponse(toEmployeeDto(employeeById), departmentDto);
+        OrganizationDto organizationDto = new OrganizationDto();
+        organizationDto.setOrganizationName("DEFAULT");
+        organizationDto.setOrganizationDescription("DEFAULT description as service is not responding");
+        organizationDto.setOrganizationCode("DEFAULT ORGANIZATION");
+
+        return new ApiResponse(toEmployeeDto(employeeById), departmentDto, organizationDto);
     }
 }
